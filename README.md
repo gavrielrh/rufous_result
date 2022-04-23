@@ -14,4 +14,9 @@ def get_user_from_api(id: int) -> Result<User, UserNotFoundError>:
     if res.ok:
         return Ok(User.from_dict(res.json()))
     return Err(UserNotFoundError(res.reason))
+
+user_id = int(input("User to lookup: "))
+print(get_user_from_api(user_id).unwrap_or("User not found"))
 ```
+
+See the [tests](./tests/test_result.py) for more examples.
