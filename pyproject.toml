@@ -3,6 +3,7 @@ name = "rufous_result"
 version = "0.1.0"
 description = ""
 authors = ["Gavriel Rachael-Homann <gavriel@gavriel.dev>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7"
