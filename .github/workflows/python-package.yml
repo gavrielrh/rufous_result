@@ -24,7 +24,7 @@ jobs:
       #----------------------------------------------
       - run: python -m pip install black isort mypy
       - run: |
-          mypy .
+          mypy . rufous_result
           black . --check
           isort .
   test:
