@@ -1,14 +1,17 @@
 [tool.poetry]
-name = "result"
+name = "rufous_result"
 version = "0.1.0"
 description = ""
 authors = ["Gavriel Rachael-Homann <gavriel@gavriel.dev>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0"
+black = "^22.3.0"
+isort = "^5.10.1"
+mypy = "^0.942"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
