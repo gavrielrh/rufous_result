@@ -27,7 +27,7 @@ class Result(Generic[T, E]):
     def ok(self) -> Optional[T]:
         """
         Converts from Result[T, E] to Optional[T].
-        
+
         Converts self into an Optional[T], consuming self, and discarding the error, if any.
         """
         raise NotImplementedError
@@ -35,7 +35,7 @@ class Result(Generic[T, E]):
     def err(self) -> Optional[E]:
         """
         Converts from Result[T, E] to Optional[E]
-        
+
         Converts self into an Optional[E], consuming self, and discarding the success value, if any.
         """
         raise NotImplementedError
@@ -43,7 +43,7 @@ class Result(Generic[T, E]):
     def map(self, op: Callable[[T], U]) -> "Result[U, E]":
         """
         Maps a Result[T, E] to Result[U, E] by applying a function to a contained Ok value, leaving an Err value untouched.
-        
+
         This function can be used to compose the results of two functions.
         """
         raise NotImplementedError
@@ -51,7 +51,7 @@ class Result(Generic[T, E]):
     def map_or(self, default: U, f: Callable[[T], U]) -> U:
         """
         Returns the provided default (if Err), or applies a function to the contained value (if Ok),
-        
+
         Arguments passed to map_or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use map_or_else, which is lazily evaluated.
         """
         raise NotImplementedError
@@ -59,7 +59,7 @@ class Result(Generic[T, E]):
     def map_or_else(self, default: Callable[[E], U], f: Callable[[T], U]) -> U:
         """
         Maps a Result[T, E] to U by applying fallback function default to a contained Err value, or function f to a contained Ok value.
-        
+
         This function can be used to unpack a successful result while handling an error.
         """
         raise NotImplementedError
@@ -73,7 +73,7 @@ class Result(Generic[T, E]):
     def iter(self) -> Iterator[Optional[T]]:
         """
         Returns an iterator over the possibly contained value.
-        
+
         The iterator yields one value if the result is Ok, otherwise none.
         """
         raise NotImplementedError
@@ -81,7 +81,7 @@ class Result(Generic[T, E]):
     def expect(self, msg: str) -> T:
         """
         Returns the contained Ok value, consuming the self value.
-        
+
         Raises:
             RuntimeError: If the value is an Err, with an error message including the passed message, and the content of the Err.
         """
@@ -92,7 +92,7 @@ class Result(Generic[T, E]):
         Returns the contained Ok value, consuming the self value.
 
         Because this function may raise a RuntimeError, its use is generally discouraged. Instead, prefer to use pattern matching and handle the Err case explicitly, or call unwrap_or, unwrap_or_else, or unwrap_or_default.
-        
+
         Raises:
             RuntimeError: If the value is an Err, with an error message provided by the Err’s value.
         """
@@ -101,7 +101,7 @@ class Result(Generic[T, E]):
     def unwrap_or_default(self) -> T:
         """
         Returns the contained Ok value or a default.
-        
+
         Consumes the self argument then, if Ok, returns the contained value, otherwise if Err, returns the default value for that type.
         """
         raise NotImplementedError
@@ -109,7 +109,7 @@ class Result(Generic[T, E]):
     def expect_err(self, msg: str) -> E:
         """
         Returns the contained Err value, consuming the self value.
-        
+
         Raises:
             RuntimeError: If the value is an Ok, with an error message including the passed message, and the content of the Ok.
         """
@@ -118,7 +118,7 @@ class Result(Generic[T, E]):
     def unwrap_err(self) -> E:
         """
         Returns the contained Err value, consuming the self value.
-        
+
         Raises:
             RuntimeError: Panics if the value is an Ok, with a custom error message provided by the Ok’s value.
         """
@@ -135,7 +135,7 @@ class Result(Generic[T, E]):
     def and_then(self, op: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
         """
         Calls op if the result is Ok, otherwise returns the Err value of self.
-        
+
         This function can be used for control flow based on Result values.
         """
         raise NotImplementedError
@@ -143,9 +143,9 @@ class Result(Generic[T, E]):
     def re_or(self, res: "Result[T, F]") -> "Result[T, F]":
         """
         Returns res if the result is Err, otherwise returns the Ok value of self.
-        
+
         Arguments passed to or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use or_else, which is lazily evaluated.
-        
+
         I would have called this `or` if it weren't already a keyword...
         """
         raise NotImplementedError
