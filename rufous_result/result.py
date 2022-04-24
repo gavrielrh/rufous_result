@@ -6,9 +6,7 @@ from typing import Callable, Generic, Iterator, Optional, TypeVar, Union
 T = TypeVar("T")
 E = TypeVar("E")
 U = TypeVar("U")
-F = Callable[[T], U]
-D = Callable[[E], U]
-O = Callable[[E], F]
+F = TypeVar("F")
 
 
 @dataclass
@@ -21,22 +19,22 @@ class Result(Generic[T, E]):
     def is_err(self) -> bool:
         raise NotImplementedError
 
-    def ok(self) -> Optional["Ok"]:
+    def ok(self) -> Optional[T]:
         raise NotImplementedError
 
-    def err(self) -> Optional["Err"]:
+    def err(self) -> Optional[E]:
         raise NotImplementedError
 
-    def map(self, op: F) -> "Result[U, E]":
+    def map(self, op: Callable[[T], U]) -> "Result[U, E]":
         raise NotImplementedError
 
-    def map_or(self, default: U, f: F) -> U:
+    def map_or(self, default: U, f: Callable[[T], U]) -> U:
         raise NotImplementedError
 
-    def map_or_else(self, default: D, f: F) -> U:
+    def map_or_else(self, default: Callable[[E], U], f: Callable[[T], U]) -> U:
         raise NotImplementedError
 
-    def map_err(self, op: O) -> "Result[T, F]":
+    def map_err(self, op: Callable[[E], F]) -> "Result[T, F]":
         raise NotImplementedError
 
     def iter(self) -> Iterator[Optional[T]]:
@@ -60,19 +58,19 @@ class Result(Generic[T, E]):
     def re_and(self, res: "Result[U, E]") -> "Result[U, E]":
         raise NotImplementedError
 
-    def and_then(self, op: F) -> "Result[U, E]":
+    def and_then(self, op: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
         raise NotImplementedError
 
     def re_or(self, res: "Result[T, F]") -> "Result[T, F]":
         raise NotImplementedError
 
-    def or_else(self, op: O) -> "Result[T, F]":
+    def or_else(self, op: Callable[[E],"Result[T, F]"]) -> "Result[T, F]":
         raise NotImplementedError
 
     def unwrap_or(self, default: T) -> T:
         raise NotImplementedError
 
-    def unwrap_or_else(self, op: F) -> T:
+    def unwrap_or_else(self, op: Callable[[E], T]) -> T:
         raise NotImplementedError
 
 
@@ -84,22 +82,22 @@ class Ok(Result):
     def is_err(self) -> bool:
         return False
 
-    def ok(self) -> Optional["Ok"]:
+    def ok(self) -> Optional[T]:
         return self.value
 
-    def err(self) -> Optional["Err"]:
+    def err(self) -> Optional[E]:
         return None
 
-    def map(self, op: F) -> "Result[U, E]":
+    def map(self, op: Callable[[T], U]) -> "Result[U, E]":
         return Ok(op(self.value))
 
-    def map_or(self, default: U, f: F) -> U:
+    def map_or(self, default: U, f: Callable[[T], U]) -> U:
         return f(self.value)
 
-    def map_or_else(self, default: D, f: F) -> U:
+    def map_or_else(self, default: Callable[[E], U], f: Callable[[T], U]) -> U:
         return f(self.value)
 
-    def map_err(self, op: O) -> "Result[T, F]":
+    def map_err(self, op: Callable[[E], F]) -> "Result[T, F]":
         return self
 
     def iter(self) -> Iterator[Optional[T]]:
@@ -125,19 +123,19 @@ class Ok(Result):
             return res
         return res
 
-    def and_then(self, op: F) -> "Result[U, E]":
+    def and_then(self, op: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
         return op(self.value)
 
     def re_or(self, res: "Result[T, F]") -> "Result[T, F]":
         return self
 
-    def or_else(self, op: O) -> "Result[T, F]":
+    def or_else(self, op: Callable[[E],"Result[T, F]"]) -> "Result[T, F]":
         return self
 
     def unwrap_or(self, default: T) -> T:
         return self.value
 
-    def unwrap_or_else(self, op: F) -> T:
+    def unwrap_or_else(self, op: Callable[[E], T]) -> T:
         return self.value
 
 
@@ -149,22 +147,22 @@ class Err(Result):
     def is_err(self) -> bool:
         return True
 
-    def ok(self) -> Optional[Ok]:
+    def ok(self) -> Optional[T]:
         return None
 
-    def err(self) -> Optional["Err"]:
+    def err(self) -> Optional[E]:
         return self.value
 
-    def map(self, op: F) -> "Result[U, E]":
+    def map(self, op: Callable[[T], U]) -> "Result[U, E]":
         return self
 
-    def map_or(self, default: U, f: F) -> U:
+    def map_or(self, default: U, f: Callable[[T], U]) -> U:
         return default
 
-    def map_or_else(self, default: D, f: F) -> U:
+    def map_or_else(self, default: Callable[[E], U], f: Callable[[T], U]) -> U:
         return default(self.value)
 
-    def map_err(self, op: O) -> "Result[T, F]":
+    def map_err(self, op: Callable[[E], F]) -> "Result[T, F]":
         return Err(op(self.value))
 
     def iter(self) -> Iterator[Optional[T]]:
@@ -192,17 +190,17 @@ class Err(Result):
     def re_and(self, res: "Result[U, E]") -> "Result[U, E]":
         return self
 
-    def and_then(self, op: F) -> "Result[U, E]":
+    def and_then(self, op: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
         return self
 
     def re_or(self, res: "Result[T, F]") -> "Result[T, F]":
         return res
 
-    def or_else(self, op: O) -> "Result[T, F]":
+    def or_else(self, op: Callable[[E],"Result[T, F]"]) -> "Result[T, F]":
         return op(self.value)
 
     def unwrap_or(self, default: T) -> T:
         return default
 
-    def unwrap_or_else(self, op: F) -> T:
+    def unwrap_or_else(self, op: Callable[[E], T]) -> T:
         return op(self.value)
