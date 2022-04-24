@@ -64,7 +64,7 @@ class Result(Generic[T, E]):
     def re_or(self, res: "Result[T, F]") -> "Result[T, F]":
         raise NotImplementedError
 
-    def or_else(self, op: Callable[[E],"Result[T, F]"]) -> "Result[T, F]":
+    def or_else(self, op: Callable[[E], "Result[T, F]"]) -> "Result[T, F]":
         raise NotImplementedError
 
     def unwrap_or(self, default: T) -> T:
@@ -89,7 +89,8 @@ class Ok(Result):
         return None
 
     def map(self, op: Callable[[T], U]) -> "Result[U, E]":
-        return Ok(op(self.value))
+        # @TODO: Figure out how to handle this mapping of types
+        return Ok(op(self.value))  # type: ignore
 
     def map_or(self, default: U, f: Callable[[T], U]) -> U:
         return f(self.value)
@@ -129,7 +130,7 @@ class Ok(Result):
     def re_or(self, res: "Result[T, F]") -> "Result[T, F]":
         return self
 
-    def or_else(self, op: Callable[[E],"Result[T, F]"]) -> "Result[T, F]":
+    def or_else(self, op: Callable[[E], "Result[T, F]"]) -> "Result[T, F]":
         return self
 
     def unwrap_or(self, default: T) -> T:
@@ -163,7 +164,8 @@ class Err(Result):
         return default(self.value)
 
     def map_err(self, op: Callable[[E], F]) -> "Result[T, F]":
-        return Err(op(self.value))
+        # @TODO: Figure out how to handle this mapping of types
+        return Err(op(self.value))  # type: ignore
 
     def iter(self) -> Iterator[Optional[T]]:
         yield None
@@ -196,7 +198,7 @@ class Err(Result):
     def re_or(self, res: "Result[T, F]") -> "Result[T, F]":
         return res
 
-    def or_else(self, op: Callable[[E],"Result[T, F]"]) -> "Result[T, F]":
+    def or_else(self, op: Callable[[E], "Result[T, F]"]) -> "Result[T, F]":
         return op(self.value)
 
     def unwrap_or(self, default: T) -> T:
