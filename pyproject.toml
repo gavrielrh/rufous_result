@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "rufous_result"
 version = "0.1.0"
-description = ""
+description = "Translation of Rust's Result type to Python 3."
 authors = ["Gavriel Rachael-Homann <gavriel@gavriel.dev>"]
 license = "MIT"
 
